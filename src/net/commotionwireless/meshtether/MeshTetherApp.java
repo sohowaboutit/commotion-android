@@ -39,7 +39,10 @@ import android.widget.Toast;
 
 
 /**
- * Manages preferences, activities and prepares the service
+ * Manages preferences, activities, prepares the service.
+ * 
+ * Maintains a list of active clients.
+ * Invokes and keeps a reference to {@link net.commotionwireless.meshtether.MeshService}.
  */
 public class MeshTetherApp extends android.app.Application {
 	final static String TAG = "MeshTetherApp";
@@ -80,6 +83,12 @@ public class MeshTetherApp extends android.app.Application {
 	public MeshService service = null;
 	public Util.StyledStringBuilder log = null; // == service.log, unless service is dead
 
+	/**
+	 * Initializes PreferenceManager, NotificationManager, WifiManager
+	 * and {@link net.commotionwireless.meshtether.NativeHelper}.
+	 * 
+	 * @see android.app.Application#onCreate()
+	 */
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -126,6 +135,10 @@ public class MeshTetherApp extends android.app.Application {
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 	}
 
+	/**
+	 * Stops {@link net.commotionwireless.meshtether.MeshService} if it is erroneously still running.
+	 * @see android.app.Application#onTerminate()
+	 */
 	@Override
 	public void onTerminate() {
 		if (service != null) {
@@ -135,6 +148,9 @@ public class MeshTetherApp extends android.app.Application {
 		super.onTerminate();
 	}
 
+	/**
+	 * Starts MeshService for the first and only time.
+	 */
 	public void startService() {
 		if (service == null) {
 			showProgressMessage(R.string.servicestarting);
@@ -142,25 +158,44 @@ public class MeshTetherApp extends android.app.Application {
 		}
 	}
 
+	/**
+	 * Stops MeshService from servicing client requests.
+	 */
 	public void stopService() {
 		if (service != null)
 			service.stopRequest();
 	}
 
+	/**
+	 * Queries the starting/running/stopped state of MeshService.
+	 * @return result of {@link net.commotionwireless.meshtether.MeshService#getState()}.
+	 */
 	public int getState() {
 		if (service != null)
 			return service.getState();
 		return MeshService.STATE_STOPPED;
 	}
 
+	/**
+	 * Is MeshService starting up?
+	 * @return true if MeshService is starting up.
+	 */
 	public boolean isChanging() {
 		return getState() == MeshService.STATE_STARTING;
 	}
 
+	/**
+	 * Is MeshService running?
+	 * @return true if MeshService is running.
+	 */
 	public boolean isRunning() {
 		return getState() == MeshService.STATE_RUNNING;
 	}
 
+	/**
+	 * Is MeshService stopped?
+	 * @return true if MeshService has stopped.
+	 */
 	public boolean isStopped() {
 		return getState() == MeshService.STATE_STOPPED;
 	}
@@ -278,7 +313,10 @@ public class MeshTetherApp extends android.app.Application {
 		}
 	}
 
-	/** find default route interface */
+	/**
+	 * find default route interface
+	 * @return true iff an active WAN interface was found.
+	 */
 	protected boolean findIfWan() {
 		// TODO move to Util.java and actually detect if there is a GSM/CDMA net connection
 		String if_wan = prefs.getString(getString(R.string.if_wan), "");
@@ -304,6 +342,10 @@ public class MeshTetherApp extends android.app.Application {
 		return prefs.getBoolean("wan_nowait", false);
 	}
 
+	/**
+	 * Stores a LAN interface
+	 * @param found_if_lan the active LAN interface reference
+	 */
 	protected void foundIfLan(String found_if_lan) {
 		String if_lan = prefs.getString(getString(R.string.if_lan), "");
 		if (if_lan.length() == 0) {
