@@ -1,0 +1,505 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*<a name="line.1"></a>
+<FONT color="green">002</FONT>     *  This file is part of Commotion Mesh Tether<a name="line.2"></a>
+<FONT color="green">003</FONT>     *  Copyright (C) 2010 by Szymon Jakubczak<a name="line.3"></a>
+<FONT color="green">004</FONT>     *<a name="line.4"></a>
+<FONT color="green">005</FONT>     *  This program is free software: you can redistribute it and/or modify<a name="line.5"></a>
+<FONT color="green">006</FONT>     *  it under the terms of the GNU General Public License as published by<a name="line.6"></a>
+<FONT color="green">007</FONT>     *  the Free Software Foundation, either version 3 of the License, or<a name="line.7"></a>
+<FONT color="green">008</FONT>     *  (at your option) any later version.<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *  This program is distributed in the hope that it will be useful,<a name="line.10"></a>
+<FONT color="green">011</FONT>     *  but WITHOUT ANY WARRANTY; without even the implied warranty of<a name="line.11"></a>
+<FONT color="green">012</FONT>     *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<a name="line.12"></a>
+<FONT color="green">013</FONT>     *  GNU General Public License for more details.<a name="line.13"></a>
+<FONT color="green">014</FONT>     *<a name="line.14"></a>
+<FONT color="green">015</FONT>     *  You should have received a copy of the GNU General Public License<a name="line.15"></a>
+<FONT color="green">016</FONT>     *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    <a name="line.18"></a>
+<FONT color="green">019</FONT>    package net.commotionwireless.meshtether;<a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.File;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.FileFilter;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.io.FileWriter;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.io.IOException;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.text.NumberFormat;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.util.ArrayList;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.util.Collection;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.Collections;<a name="line.28"></a>
+<FONT color="green">029</FONT>    <a name="line.29"></a>
+<FONT color="green">030</FONT>    import net.commotionwireless.olsrinfo.datatypes.OlsrDataDump;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import android.app.AlertDialog;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import android.app.Dialog;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import android.app.ProgressDialog;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import android.content.DialogInterface;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import android.content.Intent;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import android.net.Uri;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import android.os.Bundle;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import android.os.Handler;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import android.os.Message;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import android.util.Log;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import android.view.Menu;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import android.view.MenuItem;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import android.view.View;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import android.view.View.OnClickListener;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import android.view.Window;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import android.widget.Button;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import android.widget.ImageButton;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import android.widget.TabHost;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import android.widget.TabHost.OnTabChangeListener;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import android.widget.TextView;<a name="line.50"></a>
+<FONT color="green">051</FONT>    <a name="line.51"></a>
+<FONT color="green">052</FONT>    public class StatusActivity extends android.app.TabActivity {<a name="line.52"></a>
+<FONT color="green">053</FONT>            private MeshTetherApp app;<a name="line.53"></a>
+<FONT color="green">054</FONT>    <a name="line.54"></a>
+<FONT color="green">055</FONT>            private TabHost tabs;<a name="line.55"></a>
+<FONT color="green">056</FONT>            private ImageButton onoff;<a name="line.56"></a>
+<FONT color="green">057</FONT>            private Button chooseProfile;<a name="line.57"></a>
+<FONT color="green">058</FONT>            private AlertDialog.Builder profileDialogBuilder;<a name="line.58"></a>
+<FONT color="green">059</FONT>    <a name="line.59"></a>
+<FONT color="green">060</FONT>            private boolean paused;<a name="line.60"></a>
+<FONT color="green">061</FONT>    <a name="line.61"></a>
+<FONT color="green">062</FONT>            private TextView textDownloadRate;<a name="line.62"></a>
+<FONT color="green">063</FONT>            private TextView textUploadRate;<a name="line.63"></a>
+<FONT color="green">064</FONT>    <a name="line.64"></a>
+<FONT color="green">065</FONT>            final static int DLG_ABOUT = 0;<a name="line.65"></a>
+<FONT color="green">066</FONT>            final static int DLG_ROOT = 1;<a name="line.66"></a>
+<FONT color="green">067</FONT>            final static int DLG_ERROR = 2;<a name="line.67"></a>
+<FONT color="green">068</FONT>            final static int DLG_SUPPLICANT = 3;<a name="line.68"></a>
+<FONT color="green">069</FONT>    <a name="line.69"></a>
+<FONT color="green">070</FONT>            private final static String LINKS = "links";<a name="line.70"></a>
+<FONT color="green">071</FONT>            private final static String INFO = "info";<a name="line.71"></a>
+<FONT color="green">072</FONT>    <a name="line.72"></a>
+<FONT color="green">073</FONT>            static NumberFormat nf = NumberFormat.getInstance();<a name="line.73"></a>
+<FONT color="green">074</FONT>            static {<a name="line.74"></a>
+<FONT color="green">075</FONT>                    nf.setMaximumFractionDigits(2);<a name="line.75"></a>
+<FONT color="green">076</FONT>                    nf.setMinimumFractionDigits(2);<a name="line.76"></a>
+<FONT color="green">077</FONT>                    nf.setMinimumIntegerDigits(1);<a name="line.77"></a>
+<FONT color="green">078</FONT>            }<a name="line.78"></a>
+<FONT color="green">079</FONT>    <a name="line.79"></a>
+<FONT color="green">080</FONT>        ProgressDialog mProgressDialog;<a name="line.80"></a>
+<FONT color="green">081</FONT>        final Handler mHandler = new Handler() {<a name="line.81"></a>
+<FONT color="green">082</FONT>            @Override<a name="line.82"></a>
+<FONT color="green">083</FONT>            public void handleMessage(Message msg) {<a name="line.83"></a>
+<FONT color="green">084</FONT>                mProgressDialog.setMessage(msg.getData().getString("message"));<a name="line.84"></a>
+<FONT color="green">085</FONT>            }<a name="line.85"></a>
+<FONT color="green">086</FONT>        };<a name="line.86"></a>
+<FONT color="green">087</FONT>    <a name="line.87"></a>
+<FONT color="green">088</FONT>            /** Called when the activity is first created. */<a name="line.88"></a>
+<FONT color="green">089</FONT>            @Override<a name="line.89"></a>
+<FONT color="green">090</FONT>            public void onCreate(Bundle savedInstanceState) {<a name="line.90"></a>
+<FONT color="green">091</FONT>                    super.onCreate(savedInstanceState);<a name="line.91"></a>
+<FONT color="green">092</FONT>    <a name="line.92"></a>
+<FONT color="green">093</FONT>                    app = (MeshTetherApp)getApplication();<a name="line.93"></a>
+<FONT color="green">094</FONT>    <a name="line.94"></a>
+<FONT color="green">095</FONT>                    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);<a name="line.95"></a>
+<FONT color="green">096</FONT>                    setProgressBarIndeterminate(true);<a name="line.96"></a>
+<FONT color="green">097</FONT>                    setContentView(R.layout.main);<a name="line.97"></a>
+<FONT color="green">098</FONT>    <a name="line.98"></a>
+<FONT color="green">099</FONT>                    // control interface<a name="line.99"></a>
+<FONT color="green">100</FONT>                    onoff = (ImageButton) findViewById(R.id.onoff);<a name="line.100"></a>
+<FONT color="green">101</FONT>                    onoff.setOnClickListener(new OnClickListener() {<a name="line.101"></a>
+<FONT color="green">102</FONT>                            @Override<a name="line.102"></a>
+<FONT color="green">103</FONT>                            public void onClick(View v) {<a name="line.103"></a>
+<FONT color="green">104</FONT>                                    int state = app.getState();<a name="line.104"></a>
+<FONT color="green">105</FONT>                                    if (state == MeshService.STATE_STOPPED) {<a name="line.105"></a>
+<FONT color="green">106</FONT>                                            chooseProfile.setEnabled(false);<a name="line.106"></a>
+<FONT color="green">107</FONT>                                            onoff.setImageResource(R.drawable.comlogo_sm_on);<a name="line.107"></a>
+<FONT color="green">108</FONT>                                            app.startService();<a name="line.108"></a>
+<FONT color="green">109</FONT>                                    } else {<a name="line.109"></a>
+<FONT color="green">110</FONT>                                            app.stopService();<a name="line.110"></a>
+<FONT color="green">111</FONT>                                            onoff.setImageResource(R.drawable.comlogo_sm_off);<a name="line.111"></a>
+<FONT color="green">112</FONT>                                            chooseProfile.setEnabled(true);<a name="line.112"></a>
+<FONT color="green">113</FONT>                                            update();<a name="line.113"></a>
+<FONT color="green">114</FONT>                                    }<a name="line.114"></a>
+<FONT color="green">115</FONT>                            }<a name="line.115"></a>
+<FONT color="green">116</FONT>                    });<a name="line.116"></a>
+<FONT color="green">117</FONT>    <a name="line.117"></a>
+<FONT color="green">118</FONT>                    profileDialogBuilder = new AlertDialog.Builder(this);<a name="line.118"></a>
+<FONT color="green">119</FONT>                    profileDialogBuilder.setTitle(R.string.choose_profile);<a name="line.119"></a>
+<FONT color="green">120</FONT>    <a name="line.120"></a>
+<FONT color="green">121</FONT>                    chooseProfile = (Button) findViewById(R.id.choose_profile);<a name="line.121"></a>
+<FONT color="green">122</FONT>                    chooseProfile.setOnClickListener(new OnClickListener() {<a name="line.122"></a>
+<FONT color="green">123</FONT>                            @Override<a name="line.123"></a>
+<FONT color="green">124</FONT>                            public void onClick(View v) {<a name="line.124"></a>
+<FONT color="green">125</FONT>                                    findProfilesOnDisk();<a name="line.125"></a>
+<FONT color="green">126</FONT>                                    final String[] profilesArray = app.profiles.toArray(new String[0]);<a name="line.126"></a>
+<FONT color="green">127</FONT>                                    profileDialogBuilder.setItems(profilesArray, new DialogInterface.OnClickListener() {<a name="line.127"></a>
+<FONT color="green">128</FONT>                                            @Override<a name="line.128"></a>
+<FONT color="green">129</FONT>                                            public void onClick(DialogInterface dialog, int which) {<a name="line.129"></a>
+<FONT color="green">130</FONT>                                                    app.activeProfile = profilesArray[which];<a name="line.130"></a>
+<FONT color="green">131</FONT>                                                    chooseProfile.setText(app.activeProfile);<a name="line.131"></a>
+<FONT color="green">132</FONT>                                            }<a name="line.132"></a>
+<FONT color="green">133</FONT>                                    });<a name="line.133"></a>
+<FONT color="green">134</FONT>                                    profileDialogBuilder.create().show();<a name="line.134"></a>
+<FONT color="green">135</FONT>                            }<a name="line.135"></a>
+<FONT color="green">136</FONT>                    });<a name="line.136"></a>
+<FONT color="green">137</FONT>    <a name="line.137"></a>
+<FONT color="green">138</FONT>                    tabs = getTabHost();<a name="line.138"></a>
+<FONT color="green">139</FONT>                    tabs.addTab(tabs.newTabSpec(LINKS)<a name="line.139"></a>
+<FONT color="green">140</FONT>                                    .setIndicator(LINKS, getResources().getDrawable(R.drawable.ic_tab_contacts))<a name="line.140"></a>
+<FONT color="green">141</FONT>                                    .setContent(new Intent(this, LinksActivity.class)));<a name="line.141"></a>
+<FONT color="green">142</FONT>                    tabs.addTab(tabs.newTabSpec(INFO)<a name="line.142"></a>
+<FONT color="green">143</FONT>                                    .setIndicator(INFO, getResources().getDrawable(R.drawable.ic_tab_recent))<a name="line.143"></a>
+<FONT color="green">144</FONT>                                    .setContent(new Intent(this, InfoActivity.class)));<a name="line.144"></a>
+<FONT color="green">145</FONT>                    tabs.setOnTabChangedListener(new OnTabChangeListener() {<a name="line.145"></a>
+<FONT color="green">146</FONT>                            @Override<a name="line.146"></a>
+<FONT color="green">147</FONT>                            public void onTabChanged(String tabId) {<a name="line.147"></a>
+<FONT color="green">148</FONT>                                    update();<a name="line.148"></a>
+<FONT color="green">149</FONT>                                    // force refresh of up/down stats<a name="line.149"></a>
+<FONT color="green">150</FONT>                                    if (app.service != null)<a name="line.150"></a>
+<FONT color="green">151</FONT>                                            app.service.statsRequest(0);<a name="line.151"></a>
+<FONT color="green">152</FONT>                                    if (INFO.equals(tabId))<a name="line.152"></a>
+<FONT color="green">153</FONT>                                            app.infoActivity.update();<a name="line.153"></a>
+<FONT color="green">154</FONT>                                    if (app.linksActivity != null)<a name="line.154"></a>
+<FONT color="green">155</FONT>                                            if (LINKS.equals(tabId))<a name="line.155"></a>
+<FONT color="green">156</FONT>                                                    app.linksActivity.mPauseOlsrInfoThread = false;<a name="line.156"></a>
+<FONT color="green">157</FONT>                                            else<a name="line.157"></a>
+<FONT color="green">158</FONT>                                                    app.linksActivity.mPauseOlsrInfoThread = true;<a name="line.158"></a>
+<FONT color="green">159</FONT>                            }<a name="line.159"></a>
+<FONT color="green">160</FONT>                    });<a name="line.160"></a>
+<FONT color="green">161</FONT>    <a name="line.161"></a>
+<FONT color="green">162</FONT>                    app.setStatusActivity(this);<a name="line.162"></a>
+<FONT color="green">163</FONT>                    paused = false;<a name="line.163"></a>
+<FONT color="green">164</FONT>    <a name="line.164"></a>
+<FONT color="green">165</FONT>                    textDownloadRate = ((TextView)findViewById(R.id.download_rate));<a name="line.165"></a>
+<FONT color="green">166</FONT>                    textUploadRate = ((TextView)findViewById(R.id.upload_rate));<a name="line.166"></a>
+<FONT color="green">167</FONT>    <a name="line.167"></a>
+<FONT color="green">168</FONT>                    mProgressDialog = new ProgressDialog(this);<a name="line.168"></a>
+<FONT color="green">169</FONT>                    mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);<a name="line.169"></a>
+<FONT color="green">170</FONT>            }<a name="line.170"></a>
+<FONT color="green">171</FONT>            @Override<a name="line.171"></a>
+<FONT color="green">172</FONT>            protected void onDestroy() {<a name="line.172"></a>
+<FONT color="green">173</FONT>                    super.onDestroy();<a name="line.173"></a>
+<FONT color="green">174</FONT>                    app.setStatusActivity(null);<a name="line.174"></a>
+<FONT color="green">175</FONT>            }<a name="line.175"></a>
+<FONT color="green">176</FONT>            @Override<a name="line.176"></a>
+<FONT color="green">177</FONT>            public boolean onCreateOptionsMenu(Menu menu) {<a name="line.177"></a>
+<FONT color="green">178</FONT>                    getMenuInflater().inflate(R.menu.main, menu);<a name="line.178"></a>
+<FONT color="green">179</FONT>                    return true;<a name="line.179"></a>
+<FONT color="green">180</FONT>            }<a name="line.180"></a>
+<FONT color="green">181</FONT>            @Override<a name="line.181"></a>
+<FONT color="green">182</FONT>            public boolean onOptionsItemSelected(MenuItem item) {<a name="line.182"></a>
+<FONT color="green">183</FONT>                    switch (item.getItemId()) {<a name="line.183"></a>
+<FONT color="green">184</FONT>                    case R.id.menu_prefs:<a name="line.184"></a>
+<FONT color="green">185</FONT>                            startActivity(new Intent(this, SettingsActivity.class));<a name="line.185"></a>
+<FONT color="green">186</FONT>                            return true;<a name="line.186"></a>
+<FONT color="green">187</FONT>                    case R.id.menu_about:<a name="line.187"></a>
+<FONT color="green">188</FONT>                            showDialog(DLG_ABOUT);<a name="line.188"></a>
+<FONT color="green">189</FONT>                            return true;<a name="line.189"></a>
+<FONT color="green">190</FONT>                    case R.id.menu_share_debug:<a name="line.190"></a>
+<FONT color="green">191</FONT>                            zipAndShareFile(new File(NativeHelper.app_log, "olsrd.log"));<a name="line.191"></a>
+<FONT color="green">192</FONT>                            return true;<a name="line.192"></a>
+<FONT color="green">193</FONT>                    case R.id.menu_share_status:<a name="line.193"></a>
+<FONT color="green">194</FONT>                            getOlsrdStatusAndShare();<a name="line.194"></a>
+<FONT color="green">195</FONT>                            return true;<a name="line.195"></a>
+<FONT color="green">196</FONT>                    }<a name="line.196"></a>
+<FONT color="green">197</FONT>                    return(super.onOptionsItemSelected(item));<a name="line.197"></a>
+<FONT color="green">198</FONT>            }<a name="line.198"></a>
+<FONT color="green">199</FONT>    <a name="line.199"></a>
+<FONT color="green">200</FONT>            private void findProfilesOnDisk() {<a name="line.200"></a>
+<FONT color="green">201</FONT>                    FileFilter filter = new FileFilter() {<a name="line.201"></a>
+<FONT color="green">202</FONT>                            <a name="line.202"></a>
+<FONT color="green">203</FONT>                            @Override<a name="line.203"></a>
+<FONT color="green">204</FONT>                            public boolean accept(File pathname) {<a name="line.204"></a>
+<FONT color="green">205</FONT>                                    if (pathname.getAbsolutePath().endsWith(".properties"))<a name="line.205"></a>
+<FONT color="green">206</FONT>                                            return true;<a name="line.206"></a>
+<FONT color="green">207</FONT>                                    return false;<a name="line.207"></a>
+<FONT color="green">208</FONT>                            }<a name="line.208"></a>
+<FONT color="green">209</FONT>                    };<a name="line.209"></a>
+<FONT color="green">210</FONT>                    Collection&lt;File&gt; all = new ArrayList&lt;File&gt;();<a name="line.210"></a>
+<FONT color="green">211</FONT>                    Collections.addAll(all, NativeHelper.app_bin.listFiles(filter));<a name="line.211"></a>
+<FONT color="green">212</FONT>                    Collections.addAll(all, NativeHelper.profileDir.listFiles(filter));<a name="line.212"></a>
+<FONT color="green">213</FONT>                    for (File f : all) {<a name="line.213"></a>
+<FONT color="green">214</FONT>                            Log.i(MeshTetherApp.TAG, "Searching for profile: " + f.getAbsolutePath());<a name="line.214"></a>
+<FONT color="green">215</FONT>                            String path = f.getAbsolutePath();<a name="line.215"></a>
+<FONT color="green">216</FONT>                            String profileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".properties"));<a name="line.216"></a>
+<FONT color="green">217</FONT>                            app.profiles.add(profileName);<a name="line.217"></a>
+<FONT color="green">218</FONT>                            app.profileProperties.put(profileName, path);<a name="line.218"></a>
+<FONT color="green">219</FONT>                    }<a name="line.219"></a>
+<FONT color="green">220</FONT>            }<a name="line.220"></a>
+<FONT color="green">221</FONT>    <a name="line.221"></a>
+<FONT color="green">222</FONT>            private void getOlsrdStatusAndShare() {<a name="line.222"></a>
+<FONT color="green">223</FONT>                    if (app.getState() == MeshService.STATE_RUNNING) {<a name="line.223"></a>
+<FONT color="green">224</FONT>                            app.linksActivity.mPauseOlsrInfoThread = true;<a name="line.224"></a>
+<FONT color="green">225</FONT>                            mProgressDialog.setMessage("Generating...");<a name="line.225"></a>
+<FONT color="green">226</FONT>                            mProgressDialog.show();<a name="line.226"></a>
+<FONT color="green">227</FONT>                            new Thread() {<a name="line.227"></a>
+<FONT color="green">228</FONT>    <a name="line.228"></a>
+<FONT color="green">229</FONT>                                    private void showMessage(int messageId) {<a name="line.229"></a>
+<FONT color="green">230</FONT>                                            String message = getString(messageId);<a name="line.230"></a>
+<FONT color="green">231</FONT>                                            Message msg = mHandler.obtainMessage();<a name="line.231"></a>
+<FONT color="green">232</FONT>                                            Bundle b = new Bundle();<a name="line.232"></a>
+<FONT color="green">233</FONT>                                            b.putString("message", message);<a name="line.233"></a>
+<FONT color="green">234</FONT>                                            msg.setData(b);<a name="line.234"></a>
+<FONT color="green">235</FONT>                                            mHandler.sendMessage(msg);<a name="line.235"></a>
+<FONT color="green">236</FONT>                                    }<a name="line.236"></a>
+<FONT color="green">237</FONT>    <a name="line.237"></a>
+<FONT color="green">238</FONT>                                    @Override<a name="line.238"></a>
+<FONT color="green">239</FONT>                                    public void run() {<a name="line.239"></a>
+<FONT color="green">240</FONT>                                            try {<a name="line.240"></a>
+<FONT color="green">241</FONT>                                                    showMessage(R.string.gettingolsrinfo);<a name="line.241"></a>
+<FONT color="green">242</FONT>                                                    OlsrDataDump dump = app.mJsonInfo.all();<a name="line.242"></a>
+<FONT color="green">243</FONT>                                                    showMessage(R.string.writingfile);<a name="line.243"></a>
+<FONT color="green">244</FONT>                                                    String filename;<a name="line.244"></a>
+<FONT color="green">245</FONT>                                                    if (dump.uuid == null || dump.uuid.contentEquals(""))<a name="line.245"></a>
+<FONT color="green">246</FONT>                                                            filename = new String("olsrd-status-" + dump.systemTime + ".json");<a name="line.246"></a>
+<FONT color="green">247</FONT>                                                    else<a name="line.247"></a>
+<FONT color="green">248</FONT>                                                            filename = new String("olsrd-status-" + dump.systemTime + "_" + dump.uuid + ".json");<a name="line.248"></a>
+<FONT color="green">249</FONT>                                                    final File f = new File(NativeHelper.app_log, filename);<a name="line.249"></a>
+<FONT color="green">250</FONT>                                                    FileWriter fw = new FileWriter(f);<a name="line.250"></a>
+<FONT color="green">251</FONT>                                                    fw.write(dump.toString());<a name="line.251"></a>
+<FONT color="green">252</FONT>                                                    fw.close();<a name="line.252"></a>
+<FONT color="green">253</FONT>                                                    showMessage(R.string.zippingfile);<a name="line.253"></a>
+<FONT color="green">254</FONT>                                                    zipAndShareFile(f);<a name="line.254"></a>
+<FONT color="green">255</FONT>                                            } catch (IOException e) {<a name="line.255"></a>
+<FONT color="green">256</FONT>                                                    e.printStackTrace();<a name="line.256"></a>
+<FONT color="green">257</FONT>                                            }<a name="line.257"></a>
+<FONT color="green">258</FONT>                                            mProgressDialog.dismiss();<a name="line.258"></a>
+<FONT color="green">259</FONT>                                            app.linksActivity.mPauseOlsrInfoThread = false;<a name="line.259"></a>
+<FONT color="green">260</FONT>                                    }<a name="line.260"></a>
+<FONT color="green">261</FONT>                            }.start();<a name="line.261"></a>
+<FONT color="green">262</FONT>                    } else {<a name="line.262"></a>
+<FONT color="green">263</FONT>                            // nothing to do, since we can't talk to olsrd<a name="line.263"></a>
+<FONT color="green">264</FONT>                            app.updateToast(getString(R.string.olsrdnotrunning), true);<a name="line.264"></a>
+<FONT color="green">265</FONT>                            return;<a name="line.265"></a>
+<FONT color="green">266</FONT>                    }<a name="line.266"></a>
+<FONT color="green">267</FONT>            }<a name="line.267"></a>
+<FONT color="green">268</FONT>    <a name="line.268"></a>
+<FONT color="green">269</FONT>            private void zipAndShareFile(File f) {<a name="line.269"></a>
+<FONT color="green">270</FONT>                    if (! NativeHelper.isSdCardPresent()) {<a name="line.270"></a>
+<FONT color="green">271</FONT>                            app.updateToast("Cannot find SD card, needed for saving the zip file.", true);<a name="line.271"></a>
+<FONT color="green">272</FONT>                            return;<a name="line.272"></a>
+<FONT color="green">273</FONT>                    }<a name="line.273"></a>
+<FONT color="green">274</FONT>                    if (! f.exists()) {<a name="line.274"></a>
+<FONT color="green">275</FONT>                            app.updateToast(f.getAbsolutePath() + " does not exist!", true);<a name="line.275"></a>
+<FONT color="green">276</FONT>                            return;<a name="line.276"></a>
+<FONT color="green">277</FONT>                    }<a name="line.277"></a>
+<FONT color="green">278</FONT>                    final File zipFile = new File(NativeHelper.publicFiles, f.getName() + ".zip");<a name="line.278"></a>
+<FONT color="green">279</FONT>                    try {<a name="line.279"></a>
+<FONT color="green">280</FONT>                            NativeHelper.zip(f, zipFile);<a name="line.280"></a>
+<FONT color="green">281</FONT>                    } catch (IOException e) {<a name="line.281"></a>
+<FONT color="green">282</FONT>                            e.printStackTrace();<a name="line.282"></a>
+<FONT color="green">283</FONT>                            return;<a name="line.283"></a>
+<FONT color="green">284</FONT>                    }<a name="line.284"></a>
+<FONT color="green">285</FONT>                    Intent i = new Intent(android.content.Intent.ACTION_SEND);<a name="line.285"></a>
+<FONT color="green">286</FONT>                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);<a name="line.286"></a>
+<FONT color="green">287</FONT>                    i.setType("application/zip");<a name="line.287"></a>
+<FONT color="green">288</FONT>                    i.putExtra(Intent.EXTRA_SUBJECT, "log from Commotion Mesh Tether");<a name="line.288"></a>
+<FONT color="green">289</FONT>                    i.putExtra(Intent.EXTRA_TEXT, "Attached is an log sent by Commotion Mesh Tether.  For more info, see:\nhttps://code.commotionwireless.net/projects/commotion-android");<a name="line.289"></a>
+<FONT color="green">290</FONT>                    i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(zipFile));<a name="line.290"></a>
+<FONT color="green">291</FONT>                    startActivity(Intent.createChooser(i, "How do you want to share?"));<a name="line.291"></a>
+<FONT color="green">292</FONT>            }<a name="line.292"></a>
+<FONT color="green">293</FONT>    <a name="line.293"></a>
+<FONT color="green">294</FONT>            @Override<a name="line.294"></a>
+<FONT color="green">295</FONT>            protected Dialog onCreateDialog(int id) {<a name="line.295"></a>
+<FONT color="green">296</FONT>                    // TODO: these should not create and remove dialogs, but restore and dismiss<a name="line.296"></a>
+<FONT color="green">297</FONT>                    if (id == DLG_ABOUT) {<a name="line.297"></a>
+<FONT color="green">298</FONT>                            return (new AlertDialog.Builder(this))<a name="line.298"></a>
+<FONT color="green">299</FONT>                            .setIcon(android.R.drawable.ic_dialog_info)<a name="line.299"></a>
+<FONT color="green">300</FONT>                            .setTitle(R.string.help_title)<a name="line.300"></a>
+<FONT color="green">301</FONT>                            .setMessage(R.string.help_message)<a name="line.301"></a>
+<FONT color="green">302</FONT>                                            .setPositiveButton("Live Chat", new DialogInterface.OnClickListener() {<a name="line.302"></a>
+<FONT color="green">303</FONT>                                                    @Override<a name="line.303"></a>
+<FONT color="green">304</FONT>                                                    public void onClick(DialogInterface dialog, int which) {<a name="line.304"></a>
+<FONT color="green">305</FONT>                                                            Uri uri = Uri.parse(getString(R.string.ircUrl));<a name="line.305"></a>
+<FONT color="green">306</FONT>                                                            startActivity(new Intent(Intent.ACTION_VIEW, uri));<a name="line.306"></a>
+<FONT color="green">307</FONT>                                                    }})<a name="line.307"></a>
+<FONT color="green">308</FONT>                                                    .setNeutralButton("Website", new DialogInterface.OnClickListener() {<a name="line.308"></a>
+<FONT color="green">309</FONT>                                                            @Override<a name="line.309"></a>
+<FONT color="green">310</FONT>                                                            public void onClick(DialogInterface dialog, int which) {<a name="line.310"></a>
+<FONT color="green">311</FONT>                                                                    Uri uri = Uri.parse(getString(R.string.websiteUrl));<a name="line.311"></a>
+<FONT color="green">312</FONT>                                                                    startActivity(new Intent(Intent.ACTION_VIEW, uri));<a name="line.312"></a>
+<FONT color="green">313</FONT>                                                            }})<a name="line.313"></a>
+<FONT color="green">314</FONT>                                                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {<a name="line.314"></a>
+<FONT color="green">315</FONT>                                                                    @Override<a name="line.315"></a>
+<FONT color="green">316</FONT>                                                                    public void onClick(DialogInterface dialog, int which) { removeDialog(DLG_ABOUT); }})<a name="line.316"></a>
+<FONT color="green">317</FONT>                                                                    .create();<a name="line.317"></a>
+<FONT color="green">318</FONT>                    }<a name="line.318"></a>
+<FONT color="green">319</FONT>                    if (id == DLG_ROOT) {<a name="line.319"></a>
+<FONT color="green">320</FONT>                            return (new AlertDialog.Builder(this))<a name="line.320"></a>
+<FONT color="green">321</FONT>                            .setIcon(android.R.drawable.ic_dialog_alert)<a name="line.321"></a>
+<FONT color="green">322</FONT>                            .setTitle("Root Access")<a name="line.322"></a>
+<FONT color="green">323</FONT>                            .setMessage("MeshTether requires 'su' to access the hardware! Please, make sure you have root access.")<a name="line.323"></a>
+<FONT color="green">324</FONT>                            .setPositiveButton("Help", new DialogInterface.OnClickListener() {<a name="line.324"></a>
+<FONT color="green">325</FONT>                                    @Override<a name="line.325"></a>
+<FONT color="green">326</FONT>                                    public void onClick(DialogInterface dialog, int which) {<a name="line.326"></a>
+<FONT color="green">327</FONT>                                            Uri uri = Uri.parse(getString(R.string.rootUrl));<a name="line.327"></a>
+<FONT color="green">328</FONT>                                            startActivity(new Intent(Intent.ACTION_VIEW, uri));<a name="line.328"></a>
+<FONT color="green">329</FONT>                                    }})<a name="line.329"></a>
+<FONT color="green">330</FONT>                                    .setNegativeButton("Close", new DialogInterface.OnClickListener() {<a name="line.330"></a>
+<FONT color="green">331</FONT>                                            @Override<a name="line.331"></a>
+<FONT color="green">332</FONT>                                            public void onClick(DialogInterface dialog, int which) { removeDialog(DLG_ROOT); }})<a name="line.332"></a>
+<FONT color="green">333</FONT>                                            .create();<a name="line.333"></a>
+<FONT color="green">334</FONT>                    }<a name="line.334"></a>
+<FONT color="green">335</FONT>                    if (id == DLG_ERROR) {<a name="line.335"></a>
+<FONT color="green">336</FONT>                            return (new AlertDialog.Builder(this))<a name="line.336"></a>
+<FONT color="green">337</FONT>                            .setIcon(android.R.drawable.ic_dialog_alert)<a name="line.337"></a>
+<FONT color="green">338</FONT>                            .setTitle("Error")<a name="line.338"></a>
+<FONT color="green">339</FONT>                            .setMessage("Unexpected error occured! Check the troubleshooting guide for the error printed in the log tab.")<a name="line.339"></a>
+<FONT color="green">340</FONT>                            .setPositiveButton("Help", new DialogInterface.OnClickListener() {<a name="line.340"></a>
+<FONT color="green">341</FONT>                                    @Override<a name="line.341"></a>
+<FONT color="green">342</FONT>                                    public void onClick(DialogInterface dialog, int which) {<a name="line.342"></a>
+<FONT color="green">343</FONT>                                            Uri uri = Uri.parse(getString(R.string.fixUrl));<a name="line.343"></a>
+<FONT color="green">344</FONT>                                            startActivity(new Intent(Intent.ACTION_VIEW, uri));<a name="line.344"></a>
+<FONT color="green">345</FONT>                                    }})<a name="line.345"></a>
+<FONT color="green">346</FONT>                                    .setNegativeButton("Close", new DialogInterface.OnClickListener() {<a name="line.346"></a>
+<FONT color="green">347</FONT>                                            @Override<a name="line.347"></a>
+<FONT color="green">348</FONT>                                            public void onClick(DialogInterface dialog, int which) { removeDialog(DLG_ERROR); }})<a name="line.348"></a>
+<FONT color="green">349</FONT>                                            .create();<a name="line.349"></a>
+<FONT color="green">350</FONT>                    }<a name="line.350"></a>
+<FONT color="green">351</FONT>                    if (id == DLG_SUPPLICANT) {<a name="line.351"></a>
+<FONT color="green">352</FONT>                            return (new AlertDialog.Builder(this))<a name="line.352"></a>
+<FONT color="green">353</FONT>                            .setIcon(android.R.drawable.ic_dialog_alert)<a name="line.353"></a>
+<FONT color="green">354</FONT>                            .setTitle("Supplicant not available")<a name="line.354"></a>
+<FONT color="green">355</FONT>                            .setMessage("MeshTether had trouble starting wpa_supplicant. Try again but set 'Skip wpa_supplicant' in settings.")<a name="line.355"></a>
+<FONT color="green">356</FONT>                            .setPositiveButton("Do it now!", new DialogInterface.OnClickListener() {<a name="line.356"></a>
+<FONT color="green">357</FONT>                                    @Override<a name="line.357"></a>
+<FONT color="green">358</FONT>                                    public void onClick(DialogInterface dialog, int which) {<a name="line.358"></a>
+<FONT color="green">359</FONT>                                            app.prefs.edit().putBoolean(getString(R.string.lan_wext), true).commit();<a name="line.359"></a>
+<FONT color="green">360</FONT>                                            app.updateToast("Settings updated, try again...", true);<a name="line.360"></a>
+<FONT color="green">361</FONT>                                    }})<a name="line.361"></a>
+<FONT color="green">362</FONT>                                    .setNeutralButton("More info", new DialogInterface.OnClickListener() {<a name="line.362"></a>
+<FONT color="green">363</FONT>                                            @Override<a name="line.363"></a>
+<FONT color="green">364</FONT>                                            public void onClick(DialogInterface dialog, int which) {<a name="line.364"></a>
+<FONT color="green">365</FONT>                                                    Uri uri = Uri.parse(getString(R.string.wikiUrl));<a name="line.365"></a>
+<FONT color="green">366</FONT>                                                    startActivity(new Intent(Intent.ACTION_VIEW, uri));<a name="line.366"></a>
+<FONT color="green">367</FONT>                                            }})<a name="line.367"></a>
+<FONT color="green">368</FONT>                                            .setNegativeButton("Close", new DialogInterface.OnClickListener() {<a name="line.368"></a>
+<FONT color="green">369</FONT>                                                    @Override<a name="line.369"></a>
+<FONT color="green">370</FONT>                                                    public void onClick(DialogInterface dialog, int which) { removeDialog(DLG_ROOT); }})<a name="line.370"></a>
+<FONT color="green">371</FONT>                                                    .create();<a name="line.371"></a>
+<FONT color="green">372</FONT>                    }<a name="line.372"></a>
+<FONT color="green">373</FONT>                    return null;<a name="line.373"></a>
+<FONT color="green">374</FONT>            }<a name="line.374"></a>
+<FONT color="green">375</FONT>    <a name="line.375"></a>
+<FONT color="green">376</FONT>            @Override<a name="line.376"></a>
+<FONT color="green">377</FONT>            protected void onPause() {<a name="line.377"></a>
+<FONT color="green">378</FONT>                    super.onPause();<a name="line.378"></a>
+<FONT color="green">379</FONT>                    paused = true;<a name="line.379"></a>
+<FONT color="green">380</FONT>            }<a name="line.380"></a>
+<FONT color="green">381</FONT>            @Override<a name="line.381"></a>
+<FONT color="green">382</FONT>            protected void onResume() {<a name="line.382"></a>
+<FONT color="green">383</FONT>                    super.onResume();<a name="line.383"></a>
+<FONT color="green">384</FONT>                    paused = false;<a name="line.384"></a>
+<FONT color="green">385</FONT>                    update();<a name="line.385"></a>
+<FONT color="green">386</FONT>                    app.cleanUpNotifications();<a name="line.386"></a>
+<FONT color="green">387</FONT>            }<a name="line.387"></a>
+<FONT color="green">388</FONT>            @Override<a name="line.388"></a>
+<FONT color="green">389</FONT>            protected void onNewIntent(Intent intent) {<a name="line.389"></a>
+<FONT color="green">390</FONT>                    super.onNewIntent(intent);<a name="line.390"></a>
+<FONT color="green">391</FONT>                    if (MeshTetherApp.ACTION_CLIENTS.equals(intent.getAction())) {<a name="line.391"></a>
+<FONT color="green">392</FONT>                            getTabHost().setCurrentTab(0); // show links<a name="line.392"></a>
+<FONT color="green">393</FONT>                    }<a name="line.393"></a>
+<FONT color="green">394</FONT>            }<a name="line.394"></a>
+<FONT color="green">395</FONT>    <a name="line.395"></a>
+<FONT color="green">396</FONT>            static String formatRate(long v) {<a name="line.396"></a>
+<FONT color="green">397</FONT>                    if (v &lt; 1048576)<a name="line.397"></a>
+<FONT color="green">398</FONT>                            return nf.format(v /    1024.0f) + " KB";<a name="line.398"></a>
+<FONT color="green">399</FONT>                    else<a name="line.399"></a>
+<FONT color="green">400</FONT>                            return nf.format(v / 1048576.0f) + " MB";<a name="line.400"></a>
+<FONT color="green">401</FONT>            }<a name="line.401"></a>
+<FONT color="green">402</FONT>    <a name="line.402"></a>
+<FONT color="green">403</FONT>            void update() {<a name="line.403"></a>
+<FONT color="green">404</FONT>                    int state = app.getState();<a name="line.404"></a>
+<FONT color="green">405</FONT>    <a name="line.405"></a>
+<FONT color="green">406</FONT>                    if (state == MeshService.STATE_STOPPED) {<a name="line.406"></a>
+<FONT color="green">407</FONT>                            if (textDownloadRate != null)<a name="line.407"></a>
+<FONT color="green">408</FONT>                                    textDownloadRate.setText("---");<a name="line.408"></a>
+<FONT color="green">409</FONT>                            if (textUploadRate != null)<a name="line.409"></a>
+<FONT color="green">410</FONT>                                    textUploadRate.setText("---");<a name="line.410"></a>
+<FONT color="green">411</FONT>                            return;<a name="line.411"></a>
+<FONT color="green">412</FONT>                    }<a name="line.412"></a>
+<FONT color="green">413</FONT>    <a name="line.413"></a>
+<FONT color="green">414</FONT>                    MeshService svc = app.service;<a name="line.414"></a>
+<FONT color="green">415</FONT>                    if (svc == null) return; // unexpected race condition<a name="line.415"></a>
+<FONT color="green">416</FONT>    <a name="line.416"></a>
+<FONT color="green">417</FONT>                    if (state == MeshService.STATE_STARTING) {<a name="line.417"></a>
+<FONT color="green">418</FONT>                            setProgressBarIndeterminateVisibility(true);<a name="line.418"></a>
+<FONT color="green">419</FONT>                            return;<a name="line.419"></a>
+<FONT color="green">420</FONT>                    }<a name="line.420"></a>
+<FONT color="green">421</FONT>    <a name="line.421"></a>
+<FONT color="green">422</FONT>                    if (state != MeshService.STATE_RUNNING) {<a name="line.422"></a>
+<FONT color="green">423</FONT>                            // this is unexpected, but don't fail<a name="line.423"></a>
+<FONT color="green">424</FONT>                            return;<a name="line.424"></a>
+<FONT color="green">425</FONT>                    }<a name="line.425"></a>
+<FONT color="green">426</FONT>    <a name="line.426"></a>
+<FONT color="green">427</FONT>                    // STATE_RUNNING<a name="line.427"></a>
+<FONT color="green">428</FONT>                    setProgressBarIndeterminateVisibility(false);<a name="line.428"></a>
+<FONT color="green">429</FONT>    <a name="line.429"></a>
+<FONT color="green">430</FONT>                    Util.TrafficStats stats = svc.stats;<a name="line.430"></a>
+<FONT color="green">431</FONT>                    if (textDownloadRate != null)<a name="line.431"></a>
+<FONT color="green">432</FONT>                            textDownloadRate.setText(formatRate(stats.rate.tx_bytes)+"/s");<a name="line.432"></a>
+<FONT color="green">433</FONT>                    if (textUploadRate != null)<a name="line.433"></a>
+<FONT color="green">434</FONT>                            textUploadRate.setText(formatRate(stats.rate.rx_bytes)+"/s");<a name="line.434"></a>
+<FONT color="green">435</FONT>                    // only request stats when visible<a name="line.435"></a>
+<FONT color="green">436</FONT>                    if (!paused)<a name="line.436"></a>
+<FONT color="green">437</FONT>                            svc.statsRequest(1000);<a name="line.437"></a>
+<FONT color="green">438</FONT>            }<a name="line.438"></a>
+<FONT color="green">439</FONT>    }<a name="line.439"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,156 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package net.commotionwireless.olsrinfo.datatypes;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import java.util.Collection;<a name="line.3"></a>
+<FONT color="green">004</FONT>    <a name="line.4"></a>
+<FONT color="green">005</FONT>    /**<a name="line.5"></a>
+<FONT color="green">006</FONT>     * The complete startup configuration of &lt;tt&gt;olsrd&lt;/tt&gt;<a name="line.6"></a>
+<FONT color="green">007</FONT>     * <a name="line.7"></a>
+<FONT color="green">008</FONT>     * Written as part of the Commotion Wireless project<a name="line.8"></a>
+<FONT color="green">009</FONT>     * <a name="line.9"></a>
+<FONT color="green">010</FONT>     * @author Hans-Christoph Steiner &lt;hans@eds.org&gt;<a name="line.10"></a>
+<FONT color="green">011</FONT>     * @see &lt;a<a name="line.11"></a>
+<FONT color="green">012</FONT>     *      href="https://code.commotionwireless.net/projects/commotion/wiki/OLSR_Configuration_and_Management"&gt;OLSR<a name="line.12"></a>
+<FONT color="green">013</FONT>     *      Configuration and Management&lt;/a&gt;<a name="line.13"></a>
+<FONT color="green">014</FONT>     */<a name="line.14"></a>
+<FONT color="green">015</FONT>    public class Config {<a name="line.15"></a>
+<FONT color="green">016</FONT>            public int olsrPort;<a name="line.16"></a>
+<FONT color="green">017</FONT>            public int debugLevel;<a name="line.17"></a>
+<FONT color="green">018</FONT>            public boolean noFork;<a name="line.18"></a>
+<FONT color="green">019</FONT>            public boolean hostEmulation;<a name="line.19"></a>
+<FONT color="green">020</FONT>            public int ipVersion;<a name="line.20"></a>
+<FONT color="green">021</FONT>            public boolean allowNoInterfaces;<a name="line.21"></a>
+<FONT color="green">022</FONT>            public int typeOfService;<a name="line.22"></a>
+<FONT color="green">023</FONT>            public int rtProto;<a name="line.23"></a>
+<FONT color="green">024</FONT>            public int rtTable;<a name="line.24"></a>
+<FONT color="green">025</FONT>            public int rtTableDefault;<a name="line.25"></a>
+<FONT color="green">026</FONT>            public int rtTableTunnel;<a name="line.26"></a>
+<FONT color="green">027</FONT>            public int rtTablePriority;<a name="line.27"></a>
+<FONT color="green">028</FONT>            public int rtTableTunnelPriority;<a name="line.28"></a>
+<FONT color="green">029</FONT>            public int rtTableDefauiltOlsrPriority;<a name="line.29"></a>
+<FONT color="green">030</FONT>            public int rtTableDefaultPriority;<a name="line.30"></a>
+<FONT color="green">031</FONT>            public int willingness;<a name="line.31"></a>
+<FONT color="green">032</FONT>            public boolean willingnessAuto;<a name="line.32"></a>
+<FONT color="green">033</FONT>            public long brokenLinkCost;<a name="line.33"></a>
+<FONT color="green">034</FONT>            public long brokenRouteCost;<a name="line.34"></a>
+<FONT color="green">035</FONT>            public String fibMetrics;<a name="line.35"></a>
+<FONT color="green">036</FONT>            public String defaultIpv6Multicast;<a name="line.36"></a>
+<FONT color="green">037</FONT>            public String defaultIpv4Broadcast;<a name="line.37"></a>
+<FONT color="green">038</FONT>            public String defaultInterfaceMode;<a name="line.38"></a>
+<FONT color="green">039</FONT>            public float defaultHelloEmissionInterval;<a name="line.39"></a>
+<FONT color="green">040</FONT>            public float defaultHelloValidityTime;<a name="line.40"></a>
+<FONT color="green">041</FONT>            public float defaultTcEmissionInterval;<a name="line.41"></a>
+<FONT color="green">042</FONT>            public float defaultTcValidityTime;<a name="line.42"></a>
+<FONT color="green">043</FONT>            public float defaultMidEmissionInterval;<a name="line.43"></a>
+<FONT color="green">044</FONT>            public float defaultMidValidityTime;<a name="line.44"></a>
+<FONT color="green">045</FONT>            public float defaultHnaEmissionInterval;<a name="line.45"></a>
+<FONT color="green">046</FONT>            public float defaultHnaValidityTime;<a name="line.46"></a>
+<FONT color="green">047</FONT>            public boolean defaultAutoDetectChanges;<a name="line.47"></a>
+<FONT color="green">048</FONT>            public Collection&lt;LinkQualityMultiplier&gt; defaultLinkQualityMultipliers;<a name="line.48"></a>
+<FONT color="green">049</FONT>            public Collection&lt;HNA&gt; hna;<a name="line.49"></a>
+<FONT color="green">050</FONT>            public int ipcConnections;<a name="line.50"></a>
+<FONT color="green">051</FONT>            public int totalIpcConnectionsAllowed;<a name="line.51"></a>
+<FONT color="green">052</FONT>            public Collection&lt;AddressNetmask&gt; ipcAllowedAddresses;<a name="line.52"></a>
+<FONT color="green">053</FONT>            public int pollRate;<a name="line.53"></a>
+<FONT color="green">054</FONT>            public int nicChangePollInterval;<a name="line.54"></a>
+<FONT color="green">055</FONT>            public boolean clearScreen;<a name="line.55"></a>
+<FONT color="green">056</FONT>            public int tcRedundancy;<a name="line.56"></a>
+<FONT color="green">057</FONT>            public int mprCoverage;<a name="line.57"></a>
+<FONT color="green">058</FONT>            public int linkQualityLevel;<a name="line.58"></a>
+<FONT color="green">059</FONT>            public boolean linkQualityFisheye;<a name="line.59"></a>
+<FONT color="green">060</FONT>            public float linkQualityAging;<a name="line.60"></a>
+<FONT color="green">061</FONT>            public String linkQualityAlgorithm;<a name="line.61"></a>
+<FONT color="green">062</FONT>            public int minTcValidTime;<a name="line.62"></a>
+<FONT color="green">063</FONT>            public boolean setIpForward;<a name="line.63"></a>
+<FONT color="green">064</FONT>            public String lockFile;<a name="line.64"></a>
+<FONT color="green">065</FONT>            public boolean useNiit;<a name="line.65"></a>
+<FONT color="green">066</FONT>            public boolean smartGateway;<a name="line.66"></a>
+<FONT color="green">067</FONT>            public String mainIpAddress;<a name="line.67"></a>
+<FONT color="green">068</FONT>            public String unicastSourceIpAddress;<a name="line.68"></a>
+<FONT color="green">069</FONT>            public boolean useSourceIpRoutes;<a name="line.69"></a>
+<FONT color="green">070</FONT>            public int maxPrefixLength;<a name="line.70"></a>
+<FONT color="green">071</FONT>            public int ipSize;<a name="line.71"></a>
+<FONT color="green">072</FONT>            public boolean deleteInternetGatewaysAtStartup;<a name="line.72"></a>
+<FONT color="green">073</FONT>            public int willingnessUpdateInterval;<a name="line.73"></a>
+<FONT color="green">074</FONT>            public float maxSendMessageJitter;<a name="line.74"></a>
+<FONT color="green">075</FONT>            public int exitValue;<a name="line.75"></a>
+<FONT color="green">076</FONT>            public int maxTcValidTime;<a name="line.76"></a>
+<FONT color="green">077</FONT>            public int niit4to6InterfaceIndex;<a name="line.77"></a>
+<FONT color="green">078</FONT>            public int niit6to4InterfaceIndex;<a name="line.78"></a>
+<FONT color="green">079</FONT>            public boolean hasIpv4Gateway;<a name="line.79"></a>
+<FONT color="green">080</FONT>            public boolean hasIpv6Gateway;<a name="line.80"></a>
+<FONT color="green">081</FONT>            public int ioctlSocket;<a name="line.81"></a>
+<FONT color="green">082</FONT>            public int routeNetlinkSocket;<a name="line.82"></a>
+<FONT color="green">083</FONT>            public int routeMonitorSocket;<a name="line.83"></a>
+<FONT color="green">084</FONT>            public float linkQualityNatThreshold;<a name="line.84"></a>
+<FONT color="green">085</FONT>            public String olsrdVersion;<a name="line.85"></a>
+<FONT color="green">086</FONT>            public String olsrdBuildDate;<a name="line.86"></a>
+<FONT color="green">087</FONT>            public String olsrdBuildHost;<a name="line.87"></a>
+<FONT color="green">088</FONT>            public String os;<a name="line.88"></a>
+<FONT color="green">089</FONT>            public int startTime;<a name="line.89"></a>
+<FONT color="green">090</FONT>    }<a name="line.90"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
